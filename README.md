@@ -1,91 +1,105 @@
-# BAB 3: Memperbarui UI dengan JavaScript
+# BAB 4: Memulai dengan React
 
-Dalam bab ini, kita akan mulai membangun proyek kita dengan menggunakan metode JavaScript dan DOM untuk menambahkan tag `h1` ke proyek anda.
+Untuk menggunakan React dalam proyek yang baru dibuat, muat dua skrip React dari situs web eksternal bernama [unpkg.com](https://unpkg.com/):
 
-Buka editor kode anda dan buat file `index.html` baru. Di dalam file HTML, tambahkan kode berikut:
-
-```html
-<html>
-  <body>
-    <div></div>
-  </body>
-</html>
-```
-
-Kemudian berikan `id` yang unik pada `div` sehingga anda dapat menargetkannya nanti.
+- **react** adalah pustaka inti React.
+- **react-dom** menyediakan metode khusus DOM yang memungkinkan anda untuk menggunakan React dengan DOM.
 
 ```html
 <html>
   <body>
     <div id="app"></div>
-  </body>
-</html>
-```
-
-Untuk menulis JavaScript di dalam file HTML anda, tambahkan tag `script`:
-
-```html
-<html>
-  <body>
-    <div id="app"></div>
-    <script type="text/javascript"></script>
-  </body>
-</html>
-```
-
-Sekarang, di dalam tag `script`, anda dapat menggunakan metode DOM, [`getElementById()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById), untuk memilih elemen `<div>` berdasarkan `id`:
-
-```html
-<html>
-  <body>
-    <div id="app"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script type="text/javascript">
       const app = document.getElementById('app');
-    </script>
-  </body>
-</html>
-```
-
-Anda dapat terus menggunakan metode DOM untuk membuat elemen `<div>` baru:
-
-```html
-<html>
-  <body>
-    <div id="app"></div>
-    <script type="text/javascript">
-      // Pilih elemen div dengan id 'app'
-      const app = document.getElementById('app');
- 
-      // Buat elemen H1 baru
       const header = document.createElement('h1');
- 
-      // Buat node teks baru untuk elemen H1
       const text = 'Develop. Preview. Ship.';
-      const headerContent = document.createTextNode(text);
- 
-      // Tambahkan teks ke elemen H1
-      header.appendChild(headerContent);
- 
-      // Tempatkan elemen H1 di dalam div
+      const headerContext = document.createTextNode(text);
+      header.appendChild(headerContext);
       app.appendChild(header);
     </script>
   </body>
 </html>
 ```
 
-Untuk memastikan semuanya berfungsi, buka file HTML anda di dalam browser pilihan anda. Anda akan melihat tag `h1` yang bertuliskan, 'Develop. Preview. Ship.'.
+Alih-alih secara langsung memanipulasi DOM dengan JavaScript biasa, hapus metode DOM yang telah anda tambahkan sebelumnya, dan tambahkan [`ReactDOM.createRoot()`](https://react.dev/reference/react-dom/client/createRoot) untuk menargetkan elemen DOM tertentu dan membuat root untuk menampilkan Komponen React anda. Kemudian, tambahkan metode [`root.render()`](https://react.dev/reference/react-dom/client/hydrateRoot#root-render) untuk merender kode React anda ke DOM.
+
+Ini akan memberi tahu React untuk merender judul `<h1>` kita di dalam elemen `#app` kita.
+
+```html
+<html>
+  <body>
+    <div id="app"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script>
+      const app = document.getElementById('app');
+      const root = ReactDOM.createRoot(app);
+      root.render(<h1>Develop. Preview. Ship.</h1>);
+    </script>
+  </body>
+</html>
+```
+
+Jika anda mencoba menjalankan kode ini di browser, anda akan mendapatkan kesalahan sintaksis:
+
+```batch
+Uncaught SyntaxError: expected expression, got '<'
+```
+
+Ini karena `<h1>...</h1>` bukan Javascript yang valid. Bagian kode ini adalah **JSX**.
 
 ---
 
-## HTML vs DOM
+## Apa itu JSX?
 
-Jika anda melihat elemen DOM di dalam [browser developer tools](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Tools_and_setup/What_are_browser_developer_tools), anda akan melihat DOM menyertakan elemen `<h1>`. DOM halaman berbeda dari source code - atau dengan kata lain, file HTML asli yang anda buat.
+JSX adalah ekstensi sintaks untuk JavaScript yang memungkinkan anda mendeskripsikan UI anda dalam sintaks seperti HTML yang sudah dikenal. Hal yang menyenangkan tentang JSX adalah selain mengikuti [tiga aturan JSX](https://react.dev/learn/writing-markup-with-jsx#the-rules-of-jsx), anda tidak perlu mempelajari simbol atau sintaks baru di luar HTML dan JavaScript.
 
-![DOM and Source](https://nextjs.org/_next/image?url=https%3A%2F%2Fh8DxKfmAPhn8O0p3.public.blob.vercel-storage.com%2Flearn%2Fdark%2Flearn-dom-and-source.png&w=3840&q=75)
+Tetapi browser tidak memahami JSX secara tidak langsung, jadi anda memerlukan kompiler JavaScript, seperti [Babel](https://babeljs.io/), untuk mengubah kode JSX anda menjadi JavaScript biasa.
 
-Hal ini karena HTML mewakili **konten halaman awal**, sedangkan DOM mewakili **konten halaman yang diperbarui** yang diubah oleh kode JavaScript yang anda tulis.
+---
 
-Memperbarui DOM dengan JavaScript biasa sangat kuat tetapi bertele-tele. Anda telah menulis semua kode ini untuk menambahkan elemen `<h1>` dengan beberapa teks:
+## Menambahkan Babel ke Proyek Anda
+
+Untuk menambahkan Babel ke proyek anda, salin dan tempel skrip berikut di file `index.html` anda:
+
+```html
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+```
+
+Selain itu, anda perlu memberi tahu Babel kode apa yang akan diubah dengan mengubah jenis skript menjadi `type=text/jsx`.
+
+```html
+<html>
+  <body>
+    <div id="app"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel Script -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/jsx">
+      const domNode = document.getElementById('app');
+      const root = ReactDOM.createRoot(domNode);
+      root.render(<h1>Develop. Preview. Ship.</h1>);
+    </script>
+  </body>
+</html>
+```
+
+Untuk mengonfirmasi bahwa file tersebut berfungsi dengan benar, buka file HTML anda di browser.
+
+Membandingkan kode React **deklaratif** yang baru saja anda tulis:
+
+```jsx
+<script type="text/jsx">
+  const domNode = document.getElementById("app")
+  const root = ReactDOM.createRoot(domNode);
+  root.render(<h1>Develop. Preview. Ship.</h1>);
+</script>
+```
+
+ke kode JavaScript **imperatif** yang anda tulis di bagian sebelumnya:
 
 ```html
 <script type="text/javascript">
@@ -98,24 +112,24 @@ Memperbarui DOM dengan JavaScript biasa sangat kuat tetapi bertele-tele. Anda te
 </script>
 ```
 
-Seiring bertambahnya ukuran aplikasi atau tim, membangun aplikasi dengan cara ini bisa menjadi semakin menantang.
+Anda dapat mulai melihat bagaimana menggunakan React memungkinkan anda untuk mengurangi banyak kode berulang.
 
-Dengan pendekatan ini, pengembang menghabiskan banyak waktu menulis instruksi untuk memberi tahu komputer **bagaimana** ia harus melakukan sesuatu. Tapi bukankah lebih baik untuk menjelaskan **apa** yang ingin anda tunjukkan dan membiarkan komputer mencari tau **bagaimana** cara memperbarui DOM?
-
----
-
-## Pemrograman imperatif vs deklaratif
-
-Kode di atas adalah contoh yang baik dari pemrograman **imperatif**. Anda sedang menulis langkah-langkah tentang **bagaimana** antarmuka pengguna harus diperbarui. Tetapi ketiak datang untuk membangun antarmuka pengguna, pendekatan deklaratif sering disukai karena dapat mempercepat proses pengembangan. Alih-alih harus menulis metode DOM, akan sangat membantu jika pengembang dapat mendeklarasikan **apa** yang ingin mereka tampilkan (dalam hal ini, tag `h1` dengan beberapa teks).
-
-Dengan kata lain, **pemrograman imperatif** seperti memberikan instruksi langkah demi langkah kepada koki tentang cara membuat pizza. **Pemrograman deklaratif** seperti memesan pizza tanpa khawatir tentang langkah-langkah yang diperlukan untuk membuat pizza. 🍕
-
-[React](https://react.dev/) adalah library deklaratif populer yang dapat anda gunakan untuk membangun antarmuka pengguna (build user interface).
+Dan inilah yang dilakukan React, ini adalah pustaka yang berisi cuplikan kode yang dapat digunakan kembali yang melakukan tugas atas nama anda - dalam hal ini, memperbarui UI.
 
 ---
 
-## React: Library UI deklaratif
+## JavaScript Penting untuk React
 
-Sebagai pengembang, anda dapat memberi tahu React apa yang anda inginkan terjadi pada antarmuka pengguna, dan React akan mencari tahu langkah-langkah **bagaimana memperbarui** DOM atas nama anda.
+Meskipun anda dapat mempelajari JavaScript dan React secara bersamaan, membiasakan diri dengan JavaScript dapat membuat proses belajar React lebih mudah.
 
-Di bab berikutnya, kita akan mengeksplorasi bagaimana anda dapat memulai dengan React.
+Di bagian selanjutnya, anda akan diperkenalkan dengan beberapa konsep inti React dari perspektif JavaScript. Berikut ringkasan topik JavaScript yang akan disebutkan:
+
+- [Functions](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Functions) dan [Arrow Functions](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
+- [Objects](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+- [Arrays dan Array Methods](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)
+- [Destructuring](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
+- [Template Literals](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Template_literals)
+- [Ternary Operators](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Conditional_Operator)
+- [ES Modules dan Import / Export Syntax](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Modules)
+
+Meskipun kursus ini tidak menyelami JavaScript, praktik yang baik adalah tetap up to date dengan versi terbaru JavaScript. Tetapi jika anda belum merasa mahir dalam JavaScript, jangan biarkan ini menghalangi anda untuk mulai membangun dengan React!
